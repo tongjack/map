@@ -6,7 +6,7 @@
 <title>美悦传媒文化有限公司面试登记</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#f4f5f7;font-family:微软雅黑,sans-serif;padding:30px 15px;}
+body{background:#f4f5f7;font-family:微软雅黑,sans-serif;padding:20px 15px;}
 .box{max-width:460px;margin:0 auto;background:#fff;border-radius:12px;padding:30px 25px;box-shadow:0 2px 10px #eee;}
 .title{text-align:center;font-size:22px;color:#333;margin-bottom:25px;font-weight:bold;}
 .item{margin-bottom:20px;}
@@ -74,6 +74,8 @@ input,select{width:100%;height:44px;padding:0 12px;border:1px solid #ddd;border-
 </div>
 
 <script>
+const PUSH_TOKEN = "ab4eec84457343a4b8172062e4c93536";
+
 function submitRecruitInfo(){
     let position = document.getElementById("position").value.trim();
     let name = document.getElementById("name").value.trim();
@@ -94,8 +96,33 @@ function submitRecruitInfo(){
     if(!phone || phone.length!==11){statusDom.innerText="请输入正确11位手机号";statusDom.style.color="red";return;}
     if(!experience){statusDom.innerText="请选择工作经验";statusDom.style.color="red";return;}
 
-    statusDom.innerText="✅ 报名成功，我们会尽快联系你！";
+    pushData(position,name,gender,age,phone,experience);
+    statusDom.innerText="✅ 报名成功，信息已发微信";
     statusDom.style.color="green";
+}
+
+function pushData(position,name,gender,age,phone,experience){
+    let content = `
+📸 美悦传媒新面试登记
+💼 应聘岗位：${position}
+👤 姓名：${name}
+🚻 性别：${gender}
+🎂 年龄：${age}
+📞 电话：${phone}
+💪 工作经验：${experience}
+⏰ 提交时间：${new Date().toLocaleString()}
+    `;
+
+    fetch("https://www.pushplus.plus/send",{
+        method:"POST",
+        headers:{"Content-Type":"application/json;charset=utf-8"},
+        body:JSON.stringify({
+            token:PUSH_TOKEN,
+            title:"📸 美悦传媒面试登记通知",
+            content:content,
+            template:"txt"
+        })
+    });
 }
 </script>
 </body>

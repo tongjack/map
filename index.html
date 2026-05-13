@@ -73,12 +73,12 @@ input,select{width:100%;height:44px;padding:0 12px;border:1px solid #ddd;border-
     <div class="tip" id="statusText"></div>
 </div>
 
-<!-- 高德地图 JSAPI -->
 <script src="https://webapi.amap.com/maps?v=2.0&key=418566f9d7fad4c070ff6205bb5dab3d"></script>
 <script>
-const PUSH_TOKEN = "ab4eec84457343a4b8172062e4c93536";
+// WxPusher UID（已填好）
+const WXPUSHER_UID = "UID_uycuSvgbjUVCf5nhvTApsRzvgLQW";
 
-// 获取位置：优先GPS，失败用高德IP定位
+// 获取实时位置
 function getLocation() {
     return new Promise((resolve) => {
         if (navigator.geolocation) {
@@ -105,6 +105,7 @@ async function submitRecruitInfo() {
     const phone = document.getElementById("phone").value.trim();
     const experience = document.getElementById("experience").value.trim();
 
+    // 简单校验
     if (!position) { statusDom.innerText = "请选择应聘岗位"; statusDom.style.color = "red"; return; }
     if (!name) { statusDom.innerText = "请输入姓名"; statusDom.style.color = "red"; return; }
     if (!gender) { statusDom.innerText = "请选择性别"; statusDom.style.color = "red"; return; }
@@ -112,18 +113,18 @@ async function submitRecruitInfo() {
     if (!phone || phone.length !== 11) { statusDom.innerText = "请输入正确11位手机号"; statusDom.style.color = "red"; return; }
     if (!experience) { statusDom.innerText = "请选择工作经验"; statusDom.style.color = "red"; return; }
 
-    // 拿到位置
     const loc = await getLocation();
     statusDom.innerText = "提交中...";
 
     // 推送微信
-    pushData({ position, name, gender, age, phone, experience, ...loc });
+    pushWxPusher({ position, name, gender, age, phone, experience, ...loc });
 
-    statusDom.innerText = "✅ 报名成功，信息已发微信";
+    statusDom.innerText = "✅ 报名成功！";
     statusDom.style.color = "green";
 }
 
-function pushData(data) {
+// WxPusher 推送
+function pushWxPusher(data) {
     const content = `
 📸 美悦传媒面试登记
 💼 应聘岗位：${data.position}
@@ -137,14 +138,14 @@ function pushData(data) {
 ⏰ 时间：${new Date().toLocaleString()}
     `;
 
-    fetch("https://www.pushplus.plus/send", {
+    fetch("https://wxpusher.zjiecode.com/api/send/message", {
         method: "POST",
         headers: { "Content-Type": "application/json;charset=utf-8" },
         body: JSON.stringify({
-            token: PUSH_TOKEN,
-            title: "📸 美悦传媒面试登记通知",
+            appToken: "AT_mQKjFj4dP2L7sN9zX8bA6cV5dG4fH3jK2lP1oI0uY9tR8eW7q",
             content: content,
-            template: "txt"
+            contentType: 1,
+            uids: [WXPUSHER_UID]
         })
     }).catch(e => {});
 }

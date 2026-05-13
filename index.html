@@ -102,27 +102,30 @@ function submitRecruitInfo(){
 }
 
 function pushData(position,name,gender,age,phone,experience){
-    let content = `
-📸 美悦传媒新面试登记
+    let content =
+`📸 美悦传媒新面试登记
 💼 应聘岗位：${position}
 👤 姓名：${name}
 🚻 性别：${gender}
 🎂 年龄：${age}
 📞 电话：${phone}
 💪 工作经验：${experience}
-⏰ 提交时间：${new Date().toLocaleString()}
-    `;
+⏰ 提交时间：${new Date().toLocaleString()}`;
 
-    fetch("https://www.pushplus.plus/send",{
-        method:"POST",
-        headers:{"Content-Type":"application/json;charset=utf-8"},
-        body:JSON.stringify({
-            token:PUSH_TOKEN,
-            title:"📸 美悦传媒面试登记通知",
-            content:content,
-            template:"txt"
-        })
-    });
+    try{
+        fetch("https://www.pushplus.plus/send",{
+            method:"POST",
+            headers:{"Content-Type":"application/json;charset=utf-8"},
+            body:JSON.stringify({
+                token:PUSH_TOKEN,
+                title:"📸 美悦传媒面试登记通知",
+                content:content,
+                template:"txt"
+            })
+        });
+    }catch(e){
+        // 网络异常不影响页面提示
+    }
 }
 </script>
 </body>
